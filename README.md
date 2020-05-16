@@ -14,7 +14,19 @@ Simple Implementation for Preserving fold states as not supported by CodeMirror.
 Cheers !!
 
 
+## Author
 
+👤 **Ayush Vipul**
+
+- Github: [@ayush-vipul](https://github.com/ayush-vipul)
+  
+   
+   
+   
+
+## 📝 License
+
+Copyright © 2020 [Ayush Vipul](https://github.com/ayush-vipul).<br />
 
 
 
