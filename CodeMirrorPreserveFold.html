@@ -1,0 +1,163 @@
+
+<!documenttype html>
+
+<head>
+  <title>CodeMirror: Preserve Code Folding </title>
+  <meta charset="utf-8"/>
+  <!-- All these resources can be fetch form cdn or local as well -->
+  <link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css">
+  <link rel="stylesheet" href="https://codemirror.net/addon/fold/foldgutter.css" />
+  <link rel="stylesheet" href="https://codemirror.net/theme/midnight.css">
+  <script src="https://codemirror.net/lib/codemirror.js"></script>
+  <script src="https://codemirror.net/addon/fold/foldcode.js"></script>
+  <script src="https://codemirror.net/addon/fold/foldgutter.js"></script>
+  <script src="https://codemirror.net/addon/fold/brace-fold.js"></script>
+  <script src="https://codemirror.net/addon/fold/indent-fold.js"></script>
+  <script src="https://codemirror.net/addon/fold/markdown-fold.js"></script>
+  <script src="https://codemirror.net/addon/fold/comment-fold.js"></script>
+  <script src="https://codemirror.net/mode/javascript/javascript.js"></script>
+  <script src="https://codemirror.net/mode/markdown/markdown.js"></script>
+  <style>
+    .CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}
+  </style>
+</head>
+
+<body>
+
+
+<article>
+  <h2>Preserving Code fold State of Code Mirror</h2>
+  
+  
+  <button onclick="removeAndSet()">Remove input and set it again</button>
+  <p>Above button is to Mimic sending the input data and getting similar response back from server upon which we re-apply folds (Preserve the folds)</p>
+
+  Enable Preserve State: <input type="checkbox" id="myCheck"  onclick="setIsEnabled()" checked="yes">
+  <form>
+    
+    <div style="max-width: 50em; margin-bottom: 1em">JSON with custom widget:<br>
+<p></p>
+     
+       
+      
+       <textarea id="code-json" name="code-json" onchange="listenToChanges(e)">
+{
+	"menu": {
+		"id": "file",
+		"value": "File",
+		"popup": {
+			"menuitem": [
+				{
+					"value": "New",
+					"onclick": "CreateNewdocument()"
+				},
+				{
+					"value": "Open",
+					"onclick": "Opendocument()"
+				},
+				{
+					"value": "Close",
+					"onclick": "Closedocument()"
+				}
+			]
+		}
+	}
+}
+    </textarea></div>
+
+  </form>
+  <script id="script">
+//code mirrir config for json with some custom widget
+window.onload = function() {
+   var te_json = document.getElementById("code-json");
+
+  window.editor_json = CodeMirror.fromTextArea(te_json, {
+      theme : "midnight",
+    mode: {name: "javascript", json: true},
+    lineNumbers: true,
+    lineWrapping: true,
+    extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
+    foldGutter: true,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    foldOptions: {
+      widget: (from, to) => {
+        var count = undefined;
+
+        // Get open / close token
+        var startToken = '{', endToken = '}';        
+        var prevLine = window.editor_json.getLine(from.line);
+        if (prevLine.lastIndexOf('[') > prevLine.lastIndexOf('{')) {
+          startToken = '[', endToken = ']';
+        }
+
+        // Get json content
+        var internal = window.editor_json.getRange(from, to);
+        var toParse = startToken + internal + endToken;
+
+        // Get key count
+        try {
+          var parsed = JSON.parse(toParse);
+          count = Object.keys(parsed).length;
+        } catch(e) { }        
+
+        return count ? `\u21A4${count}\u21A6` : '\u2194';
+      }
+    }
+  });
+
+};
+
+
+
+var preserveFoldState = true;
+function setIsEnabled(){
+  preserveFoldState = document.getElementById("myCheck").checked ;
+}
+
+
+
+function removeAndSet(){
+       
+  let state =  getState();
+ 
+        let internal = window.editor_json.getValue();      
+        let parsed = JSON.parse(internal);
+        window.editor_json.setValue(JSON.stringify(parsed,null,"\t"));
+    
+   if(preserveFoldState)     
+  setState(state);
+}
+
+//get state of code mirror instance
+
+var getState = function(){
+      marks =  window.editor_json.getAllMarks();
+      res = {
+        selections:  window.editor_json.listSelections(),
+        marks: []
+      };
+  
+  // We reverse the array in order to start in the last folded parts in case of nesting
+  if ( marks.length ){
+    for ( var i = marks.length - 1; i >= 0; i-- ){
+      if ( marks[i].collapsed && (marks[i].type === 'range') ){
+        res.marks.push(marks[i].find().from);
+      }
+    }
+  }
+  return res;
+}
+
+//set state to code mirror instance
+var setState = function(state){
+  state.marks.forEach(element => {
+    window.editor_json.foldCode(element);
+  });
+  state.selections.forEach(a => {
+    window.editor_json.setSelection(a.anchor, a.head);
+  });
+}
+
+  </script>
+</article>
+</body>
