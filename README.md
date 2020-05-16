@@ -9,9 +9,9 @@ Works with [Code Mirror](https://codemirror.net/) Instance.
 
 Simple Implementation for Preserving fold states as not supported by CodeMirror.
 
- [Demo](https://codemirror.net/)
+ Click here for [Demo](https://ayush-vipul.github.io/codeMirror-Preserve-input-fold-state/main.html)
 
-Cheers
+Cheers !!
 
 
 
