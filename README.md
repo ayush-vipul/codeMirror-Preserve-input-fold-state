@@ -2,6 +2,8 @@
 
 Preserving Input/Code fold state of CodeMirror Instance
 
+![Example](link-to-image)
+
 
 Works with [Code Mirror](https://codemirror.net/) Instance.
 
