@@ -9,6 +9,14 @@ Works with [Code Mirror](https://codemirror.net/) Instance.
 
 Simple Implementation for Preserving fold states as not supported by CodeMirror.
 
+ [Demo](https://codemirror.net/)
+
+Cheers
+
+
+
+
+
 
 
 
